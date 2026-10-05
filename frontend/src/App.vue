@@ -17,8 +17,13 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { api } from './api'
 const alerts = ref([])
-onMounted(async () => { try { alerts.value = await api('/alerts') } catch { alerts.value = [] } })
+const route = useRoute()
+async function load() { try { alerts.value = await api('/alerts') } catch { alerts.value = [] } }
+onMounted(load)
+// 路由切换(如确认入库后落到该层页)时刷新顶条，与全层/下架名单保持同一代
+watch(() => route.fullPath, load)
 </script>
