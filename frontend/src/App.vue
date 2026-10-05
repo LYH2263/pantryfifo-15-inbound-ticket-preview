@@ -17,8 +17,13 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { api } from './api'
 const alerts = ref([])
-onMounted(async () => { try { alerts.value = await api('/alerts') } catch { alerts.value = [] } })
+const route = useRoute()
+async function loadAlerts() { try { alerts.value = await api('/alerts') } catch { alerts.value = [] } }
+// 顶条随页面切换重取，与层页保持同一世代，避免层页见新批而顶条不报
+watch(() => route.fullPath, loadAlerts)
+onMounted(loadAlerts)
 </script>
